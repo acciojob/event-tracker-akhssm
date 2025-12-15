@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import Popup from "react-popup";
+import "react-popup/style.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../styles/App.css";
 
@@ -9,8 +10,17 @@ const localizer = momentLocalizer(moment);
 
 const App = () => {
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [filter, setFilter] = useState("ALL");
 
+  // FILTER EVENTS
+  const filteredEvents = events.filter(event => {
+    const isPast = moment(event.start).isBefore(moment(), "day");
+    if (filter === "PAST") return isPast;
+    if (filter === "UPCOMING") return !isPast;
+    return true;
+  });
+
+  // CREATE EVENT
   const handleSelectSlot = ({ start }) => {
     Popup.create({
       title: "Create Event",
@@ -30,8 +40,8 @@ const App = () => {
               const location = document.getElementById("event-location").value;
 
               if (title) {
-                setEvents([
-                  ...events,
+                setEvents(prev => [
+                  ...prev,
                   {
                     title,
                     location,
@@ -49,9 +59,8 @@ const App = () => {
     });
   };
 
+  // EDIT / DELETE EVENT
   const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
-
     Popup.create({
       title: "Edit / Delete Event",
       buttons: {
@@ -60,7 +69,7 @@ const App = () => {
             text: "Delete",
             className: "mm-popup__btn mm-popup__btn--danger",
             action: () => {
-              setEvents(events.filter(e => e !== event));
+              setEvents(prev => prev.filter(e => e !== event));
               Popup.close();
             }
           }
@@ -72,8 +81,8 @@ const App = () => {
             action: () => {
               const newTitle = prompt("Edit title", event.title);
               if (newTitle) {
-                setEvents(
-                  events.map(e =>
+                setEvents(prev =>
+                  prev.map(e =>
                     e === event ? { ...e, title: newTitle } : e
                   )
                 );
@@ -86,25 +95,34 @@ const App = () => {
     });
   };
 
+  // EVENT COLOR
   const eventStyleGetter = (event) => {
     const isPast = moment(event.start).isBefore(moment(), "day");
-
     return {
       style: {
         backgroundColor: isPast
-          ? "rgb(222, 105, 135)" 
-          : "rgb(140, 189, 76)" 
+          ? "rgb(222, 105, 135)" // past
+          : "rgb(140, 189, 76)" // upcoming
       }
     };
   };
 
   return (
     <div>
+      {/* REQUIRED ROOT FOR react-popup */}
       <Popup />
+
+      {/* FILTER BUTTONS */}
+      <div>
+        <button className="btn" onClick={() => setFilter("ALL")}>All</button>
+        <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
+        <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
+      </div>
+
       <Calendar
         selectable
         localizer={localizer}
-        events={events}
+        events={filteredEvents}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
