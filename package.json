@@ -12,10 +12,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "css-loader": "^4.3.0",
-    "jest-junit": "^11.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+
+    "moment": "^2.22.2",
+    "react-big-calendar": "^0.20.1",
+    "react-popup": "^0.9.3",
+
+    "regenerator-runtime": "^0.13.11",
+
+    "css-loader": "^4.3.0",
     "style-loader": "^1.2.1",
     "webpack-cli": "^3.3.12",
     "cypress": "^9.5.0"
@@ -36,19 +42,23 @@
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
-    "@testing-library/react": "^11.0.4",
-    "babel-core": "^6.26.3",
+    "@babel/polyfill": "^7.12.1",
+
     "babel-loader": "^8.1.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
+
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.5.0",
-    "html-webpack-plugin": "^4.5.0",
+
+    "@testing-library/react": "^11.0.4",
     "jest": "^26.4.2",
+    "jest-junit": "^11.1.0",
     "react-test-renderer": "^16.13.1",
+
+    "html-webpack-plugin": "^4.5.2",
     "webpack": "^4.44.2",
     "webpack-dev-server": "^3.11.0",
+
     "xml-js": "^1.6.11"
   }
 }
