@@ -121,16 +121,32 @@ const App = () => {
       <Popup />
 
       <div>
-        <button className="btn" onClick={() => setFilter("ALL")}>All</button>
-        <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
-        <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
+        <div>
+          <button className="btn" onClick={() => setFilter("ALL")}>
+            All
+          </button>
+        </div>
 
-        <button
-          className="btn"
-          onClick={() => openCreatePopup(new Date())}
-        >
-          Add Event
-        </button>
+        <div>
+          <button className="btn" onClick={() => setFilter("PAST")}>
+            Past
+          </button>
+        </div>
+
+        <div>
+          <button className="btn" onClick={() => setFilter("UPCOMING")}>
+            Upcoming
+          </button>
+        </div>
+
+        <div>
+          <button
+            className="btn"
+            onClick={() => openCreatePopup(new Date())}
+          >
+            Add Event
+          </button>
+        </div>
       </div>
 
       <Calendar
