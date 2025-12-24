@@ -8,3 +8,7 @@ input {
   display: block;
   margin: 8px 0;
 }
+
+.mm-popup__overlay {
+  pointer-events: none;
+}
