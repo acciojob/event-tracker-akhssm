@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import BigCalendar, { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import Popup from "react-popup";
@@ -11,16 +11,22 @@ const localizer = momentLocalizer(moment);
 const Calendar = BigCalendar;
 
 const EventButton = ({ event }) => {
+  const btnRef = useRef(null);
   const isPast = moment(event.start).isBefore(moment(), "day");
 
+  useEffect(() => {
+    if (btnRef.current) {
+      btnRef.current.setAttribute(
+        "style",
+        isPast
+          ? "background-color: rgb(222, 105, 135);"
+          : "background-color: rgb(140, 189, 76);"
+      );
+    }
+  }, [isPast]);
+
   return (
-    <button
-      style={{
-        backgroundColor: isPast
-          ? "rgb(222, 105, 135)"   
-          : "rgb(140, 189, 76)"  
-      }}
-    >
+    <button ref={btnRef}>
       {event.title}
     </button>
   );
@@ -75,9 +81,7 @@ const App = () => {
     });
   };
 
-  const handleSelectSlot = ({ start }) => {
-    openCreatePopup(start);
-  };
+  const handleSelectSlot = ({ start }) => openCreatePopup(start);
 
   const handleSelectEvent = (event) => {
     Popup.create({
@@ -126,23 +130,10 @@ const App = () => {
       <Popup />
 
       <div>
-        <div>
-          <button className="btn" onClick={() => setFilter("ALL")}>All</button>
-        </div>
-
-        <div>
-          <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
-        </div>
-
-        <div>
-          <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
-        </div>
-
-        <div>
-          <button className="btn" onClick={() => openCreatePopup(new Date())}>
-            Add Event
-          </button>
-        </div>
+        <div><button className="btn" onClick={() => setFilter("ALL")}>All</button></div>
+        <div><button className="btn" onClick={() => setFilter("PAST")}>Past</button></div>
+        <div><button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button></div>
+        <div><button className="btn" onClick={() => openCreatePopup(new Date())}>Add Event</button></div>
       </div>
 
       <Calendar
@@ -154,9 +145,7 @@ const App = () => {
         style={{ height: 500 }}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
-        components={{
-          event: EventButton
-        }}
+        components={{ event: EventButton }}
       />
     </div>
   );
