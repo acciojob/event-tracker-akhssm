@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import BigCalendar, { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import Popup from "react-popup";
+
 import "react-popup/style.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../styles/App.css";
@@ -20,7 +21,7 @@ const App = () => {
     return true;
   });
 
-  const handleSelectSlot = ({ start }) => {
+  const openCreatePopup = (startDate) => {
     Popup.create({
       title: "Create Event",
       content: (
@@ -44,8 +45,8 @@ const App = () => {
                   {
                     title,
                     location,
-                    start,
-                    end: start,
+                    start: startDate,
+                    end: startDate,
                     allDay: true
                   }
                 ]);
@@ -56,6 +57,10 @@ const App = () => {
         ]
       }
     });
+  };
+
+  const handleSelectSlot = ({ start }) => {
+    openCreatePopup(start);
   };
 
   const handleSelectEvent = (event) => {
@@ -119,6 +124,13 @@ const App = () => {
         <button className="btn" onClick={() => setFilter("ALL")}>All</button>
         <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
         <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
+
+        <button
+          className="btn"
+          onClick={() => openCreatePopup(new Date())}
+        >
+          Add Event
+        </button>
       </div>
 
       <Calendar
