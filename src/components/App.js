@@ -10,6 +10,22 @@ import "../styles/App.css";
 const localizer = momentLocalizer(moment);
 const Calendar = BigCalendar;
 
+const EventButton = ({ event }) => {
+  const isPast = moment(event.start).isBefore(moment(), "day");
+
+  return (
+    <button
+      style={{
+        backgroundColor: isPast
+          ? "rgb(222, 105, 135)"   
+          : "rgb(140, 189, 76)"  
+      }}
+    >
+      {event.title}
+    </button>
+  );
+};
+
 const App = () => {
   const [events, setEvents] = useState([]);
   const [filter, setFilter] = useState("ALL");
@@ -105,45 +121,25 @@ const App = () => {
     });
   };
 
-  const eventStyleGetter = (event) => {
-    const isPast = moment(event.start).isBefore(moment(), "day");
-    return {
-      style: {
-        backgroundColor: isPast
-          ? "rgb(222, 105, 135)"   
-          : "rgb(140, 189, 76)"   
-      }
-    };
-  };
-
   return (
     <div>
       <Popup />
 
       <div>
         <div>
-          <button className="btn" onClick={() => setFilter("ALL")}>
-            All
-          </button>
+          <button className="btn" onClick={() => setFilter("ALL")}>All</button>
         </div>
 
         <div>
-          <button className="btn" onClick={() => setFilter("PAST")}>
-            Past
-          </button>
+          <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
         </div>
 
         <div>
-          <button className="btn" onClick={() => setFilter("UPCOMING")}>
-            Upcoming
-          </button>
+          <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
         </div>
 
         <div>
-          <button
-            className="btn"
-            onClick={() => openCreatePopup(new Date())}
-          >
+          <button className="btn" onClick={() => openCreatePopup(new Date())}>
             Add Event
           </button>
         </div>
@@ -158,7 +154,9 @@ const App = () => {
         style={{ height: 500 }}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
-        eventPropGetter={eventStyleGetter}
+        components={{
+          event: EventButton
+        }}
       />
     </div>
   );
