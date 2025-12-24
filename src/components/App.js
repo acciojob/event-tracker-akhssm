@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import BigCalendar, { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import Popup from "react-popup";
@@ -11,22 +11,21 @@ const localizer = momentLocalizer(moment);
 const Calendar = BigCalendar;
 
 const EventButton = ({ event }) => {
-  const btnRef = useRef(null);
   const isPast = moment(event.start).isBefore(moment(), "day");
 
-  useEffect(() => {
-    if (btnRef.current) {
-      btnRef.current.setAttribute(
-        "style",
-        isPast
-          ? "background-color: rgb(222, 105, 135);"
-          : "background-color: rgb(140, 189, 76);"
-      );
-    }
-  }, [isPast]);
-
   return (
-    <button ref={btnRef}>
+    <button
+      ref={(el) => {
+        if (el) {
+          el.setAttribute(
+            "style",
+            isPast
+              ? "background-color: rgb(222, 105, 135);"
+              : "background-color: rgb(140, 189, 76);"
+          );
+        }
+      }}
+    >
       {event.title}
     </button>
   );
