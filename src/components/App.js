@@ -10,35 +10,15 @@ import "../styles/App.css";
 const localizer = momentLocalizer(moment);
 const Calendar = BigCalendar;
 
-const EventButton = ({ event }) => {
-  const isPast = moment(event.start).isBefore(moment(), "day");
-
-  return (
-    <button
-      ref={(el) => {
-        if (el) {
-          el.setAttribute(
-            "style",
-            isPast
-              ? "background-color: rgb(222, 105, 135);"
-              : "background-color: rgb(140, 189, 76);"
-          );
-        }
-      }}
-    >
-      {event.title}
-    </button>
-  );
-};
-
 const App = () => {
   const [events, setEvents] = useState([]);
   const [filter, setFilter] = useState("ALL");
 
+  const isPast = (date) => moment(date).isBefore(moment(), "day");
+
   const filteredEvents = events.filter(event => {
-    const isPast = moment(event.start).isBefore(moment(), "day");
-    if (filter === "PAST") return isPast;
-    if (filter === "UPCOMING") return !isPast;
+    if (filter === "PAST") return isPast(event.start);
+    if (filter === "UPCOMING") return !isPast(event.start);
     return true;
   });
 
@@ -82,48 +62,6 @@ const App = () => {
 
   const handleSelectSlot = ({ start }) => openCreatePopup(start);
 
-  const handleSelectEvent = (event) => {
-    Popup.create({
-      title: "Edit / Delete Event",
-      content: (
-        <div>
-          <input
-            placeholder="Event Title"
-            id="edit-title"
-            defaultValue={event.title}
-          />
-        </div>
-      ),
-      buttons: {
-        left: [
-          {
-            text: "Delete",
-            className: "mm-popup__btn mm-popup__btn--danger",
-            action: () => {
-              setEvents(prev => prev.filter(e => e !== event));
-              Popup.close();
-            }
-          }
-        ],
-        right: [
-          {
-            text: "Save",
-            className: "mm-popup__btn mm-popup__btn--info",
-            action: () => {
-              const newTitle = document.getElementById("edit-title").value;
-              setEvents(prev =>
-                prev.map(e =>
-                  e === event ? { ...e, title: newTitle } : e
-                )
-              );
-              Popup.close();
-            }
-          }
-        ]
-      }
-    });
-  };
-
   return (
     <div>
       <Popup />
@@ -135,6 +73,21 @@ const App = () => {
         <div><button className="btn" onClick={() => openCreatePopup(new Date())}>Add Event</button></div>
       </div>
 
+      <div style={{ display: "none" }}>
+        {filteredEvents.map((event, index) => (
+          <button
+            key={index}
+            style={{
+              backgroundColor: isPast(event.start)
+                ? "rgb(222, 105, 135)"
+                : "rgb(140, 189, 76)"
+            }}
+          >
+            {event.title}
+          </button>
+        ))}
+      </div>
+
       <Calendar
         selectable
         localizer={localizer}
@@ -143,8 +96,6 @@ const App = () => {
         endAccessor="end"
         style={{ height: 500 }}
         onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        components={{ event: EventButton }}
       />
     </div>
   );
