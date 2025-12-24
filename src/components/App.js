@@ -16,7 +16,7 @@ const App = () => {
 
   const isPast = (date) => moment(date).isBefore(moment(), "day");
 
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = events.filter((event) => {
     if (filter === "PAST") return isPast(event.start);
     if (filter === "UPCOMING") return !isPast(event.start);
     return true;
@@ -41,46 +41,94 @@ const App = () => {
               const location = document.getElementById("event-location").value;
 
               if (title) {
-                setEvents(prev => [
+                setEvents((prev) => [
                   ...prev,
                   {
                     title,
                     location,
                     start: startDate,
                     end: startDate,
-                    allDay: true
-                  }
+                    allDay: true,
+                  },
                 ]);
               }
               Popup.close();
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     });
   };
 
-  const handleSelectSlot = ({ start }) => openCreatePopup(start);
+  const handleSelectEvent = (event) => {
+    Popup.create({
+      title: "Edit / Delete Event",
+      content: (
+        <div>
+          <input
+            id="edit-title"
+            placeholder="Event Title"
+            defaultValue={event.title}
+          />
+        </div>
+      ),
+      buttons: {
+        left: [
+          {
+            text: "Delete",
+            className: "mm-popup__btn mm-popup__btn--danger",
+            action: () => {
+              setEvents((prev) => prev.filter((e) => e !== event));
+              Popup.close();
+            },
+          },
+        ],
+        right: [
+          {
+            text: "Save",
+            className: "mm-popup__btn mm-popup__btn--info",
+            action: () => {
+              const newTitle = document.getElementById("edit-title").value;
+              setEvents((prev) =>
+                prev.map((e) =>
+                  e === event ? { ...e, title: newTitle } : e
+                )
+              );
+              Popup.close();
+            },
+          },
+        ],
+      },
+    });
+  };
+
+  const eventStyleGetter = (event) => ({
+    style: {
+      backgroundColor: isPast(event.start)
+        ? "rgb(222, 105, 135)"
+        : "rgb(140, 189, 76)",
+    },
+  });
 
   return (
     <div>
       <Popup />
 
       <div>
-        <div><button className="btn" onClick={() => setFilter("ALL")}>All</button></div>
-        <div><button className="btn" onClick={() => setFilter("PAST")}>Past</button></div>
-        <div><button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button></div>
-        <div><button className="btn" onClick={() => openCreatePopup(new Date())}>Add Event</button></div>
+        <button className="btn" onClick={() => setFilter("ALL")}>All</button>
+        <button className="btn" onClick={() => setFilter("PAST")}>Past</button>
+        <button className="btn" onClick={() => setFilter("UPCOMING")}>Upcoming</button>
+        <button className="btn" onClick={() => openCreatePopup(new Date())}>Add Event</button>
       </div>
 
       <div style={{ display: "none" }}>
-        {filteredEvents.map((event, index) => (
+        {filteredEvents.map((event, i) => (
           <button
-            key={index}
+            key={i}
             style={{
               backgroundColor: isPast(event.start)
                 ? "rgb(222, 105, 135)"
-                : "rgb(140, 189, 76)"
+                : "rgb(140, 189, 76)",
             }}
           >
             {event.title}
@@ -95,7 +143,9 @@ const App = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
-        onSelectSlot={handleSelectSlot}
+        onSelectSlot={({ start }) => openCreatePopup(start)}
+        onSelectEvent={handleSelectEvent}
+        eventPropGetter={eventStyleGetter}
       />
     </div>
   );
